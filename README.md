@@ -6,6 +6,8 @@
 [![Target](https://img.shields.io/badge/Target-OWASP%20Juice%20Shop-orange)](https://owasp.org/www-project-juice-shop/)
 [![Focus](https://img.shields.io/badge/Focus-Web%20Application%20Security-blue)](#assessment-scope)
 
+![Project architecture](images/architecture.svg)
+
 ## Project overview
 
 This project documents a practical assessment of OWASP Juice Shop through a TryHackMe environment. The objective was to understand how common web application weaknesses can be discovered, validated, and communicated with practical remediation advice.
