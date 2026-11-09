@@ -1,210 +1,101 @@
-# Securing-the-Digital-Marketplace-Strengthening-Security-for-Vulnerable-Websites
-Performed web application security testing on OWASP Juice Shop using TryHackMe, Nmap, and Burp Suite, identifying SQL injection, XSS, information disclosure, and HTTP request manipulation issues.
+# Web Application Security Assessment — OWASP Juice Shop
 
+> A hands-on web security assessment of an intentionally vulnerable e-commerce application in a TryHackMe lab.
 
+[![Platform](https://img.shields.io/badge/Lab-TryHackMe-212C42)](https://tryhackme.com/)
+[![Target](https://img.shields.io/badge/Target-OWASP%20Juice%20Shop-orange)](https://owasp.org/www-project-juice-shop/)
+[![Focus](https://img.shields.io/badge/Focus-Web%20Application%20Security-blue)](#assessment-scope)
 
- Project Overview
-===================
-In this project, I performed a web application security assessment on OWASP Juice Shop, an intentionally vulnerable e-commerce application available through TryHackMe.
+## Project overview
 
-The main objective was to understand how common web application vulnerabilities can be identified and how they may affect the security of an online shopping platform.
+This project documents a practical assessment of OWASP Juice Shop through a TryHackMe environment. The objective was to understand how common web application weaknesses can be discovered, validated, and communicated with practical remediation advice.
 
-I used Kali Linux, Nmap, and Burp Suite to explore the application, analyze HTTP requests, test input fields, and identify weaknesses related to authentication, information disclosure, and request manipulation.
+The work combined initial network discovery with manual application exploration and HTTP request inspection. Burp Suite Community Edition was used to inspect and modify requests in the lab; Nmap was used for initial service discovery.
 
-This project helped me understand common web security vulnerabilities through practical testing rather than only theoretical learning.
+## Assessment scope
 
-Tools and Technologies Used
-===========================
-TryHackMe
+The activities documented in this lab covered:
 
-OWASP Juice Shop
+- SQL injection testing against the login workflow, including an authentication-bypass outcome in the intentionally vulnerable target.
+- Cross-site scripting (XSS) testing through an application input field.
+- Information disclosure through a document request.
+- Client-side versus server-side validation, using a modified feedback rating request.
+- Inspection and manipulation of product-related HTTP requests and responses.
 
-Kali Linux
+All testing was performed against the designated training target in TryHackMe. These techniques must only be used in systems for which testing is explicitly authorized.
 
-Nmap
+## Environment and tools
 
-OpenVPN
+| Component | Purpose |
+|---|---|
+| TryHackMe | Hosted, authorized training environment |
+| OWASP Juice Shop | Intentionally vulnerable web application |
+| Kali Linux | Assessment workstation |
+| OpenVPN | Connection to the TryHackMe lab network |
+| Nmap | Initial port and service discovery |
+| Burp Suite Community Edition | HTTP proxy, interception, and Repeater |
+| Web browser | Manual application exploration |
 
-Burp Suite Community Edition
+## Methodology
 
-Web Browser
+### 1. Lab connectivity
 
-HTTP Requests and Responses
+Joined the relevant TryHackMe room, started the target instance, downloaded the room-provided OpenVPN configuration, and connected from Kali Linux. The target address was session-specific and could change when the lab instance was restarted.
 
-Project Implementation
+### 2. Initial service discovery
 
-STEP-1:- Setting Up the TryHackMe Environment
--------
-I started by logging into TryHackMe and opening the OWASP Juice Shop room.
+Used Nmap against the assigned lab target to identify exposed ports and services before beginning application-level testing. The README notes HTTP and SSH services during the recorded scan; exact scan output is not included here.
 
-After joining the room, I started the target machine and obtained the IP address assigned to the vulnerable application.
+### 3. Application reconnaissance
 
-The target IP address changed during the exercise because the original machine session expired.
+Opened Juice Shop in a browser and reviewed its public pages, navigation, product area, feedback feature, and information pages. This established the application workflow and likely input points for further testing.
 
-STEP-2:- Establishing VPN Connectivity
--------
-To access the TryHackMe target from my Kali Linux machine, I downloaded the OpenVPN configuration file provided by TryHackMe.
+### 4. HTTP traffic inspection
 
-I installed OpenVPN and connected to the lab network using the downloaded configuration.
+Started Burp Suite Community Edition and configured the browser to use the local proxy at `127.0.0.1:8080`. Intercepted application traffic and used Burp Repeater to review and modify selected requests.
 
-This allowed me to communicate with the target machine through the TryHackMe environment.
+### 5. Vulnerability validation
 
-STEP-3:- Performing Initial Network Scanning
--------
-After connecting to the lab, I performed an Nmap scan against the target machine.
+| Area tested | Lab observation | Defensive recommendation |
+|---|---|---|
+| Login input | SQL injection test resulted in an administrative session in the lab | Use parameterized queries; avoid dynamically concatenated SQL; enforce authentication controls |
+| User input | XSS-related behavior was observed during the test | Apply context-aware output encoding, safe templating, input validation, and an appropriate Content Security Policy |
+| Document access | Changing a requested document path exposed additional content | Enforce server-side authorization for every resource; do not rely on obscurity of file names |
+| Feedback rating | A modified HTTP request accepted a value outside the normal UI range | Validate allowed values on the server side |
+| Product requests | Request/response behavior and returned product information were inspected | Validate client-controlled parameters and enforce object-level authorization |
 
-The purpose was to identify open ports and running services before beginning the web application assessment.
+The table summarizes observations recorded in the project notes. It does not imply that every possible variant of these vulnerability classes was tested.
 
-The scan identified services including SSH and HTTP.
+## Key learning outcomes
 
-This helped me understand the network exposure of the target application.
+- Established a VPN-connected security testing environment for a hosted lab.
+- Used Nmap for initial network and service discovery.
+- Configured Burp Suite as an intercepting proxy and used Repeater for request analysis.
+- Practised identifying input-handling, authorization, and information-disclosure weaknesses.
+- Connected technical observations to practical remediation recommendations.
 
-STEP-4:- Exploring the OWASP Juice Shop Application
-------
-Next, I opened the OWASP Juice Shop application through the browser.
+## Evidence and reproducibility
 
-I explored the available products, navigation menu, customer feedback section, and other application features.
+The original project notes describe the testing sequence, but this repository currently contains no screenshots, raw scan output, sanitized HTTP captures, or exported evidence files. Add those artifacts only after checking that they contain no credentials, session cookies, personal data, or live target details.
 
-This helped me understand how the website was structured and identify areas for further security testing.
+For a stronger technical portfolio, future evidence can include:
+- A sanitized Nmap output excerpt.
+- A redacted request/response pair for each confirmed finding.
+- Screenshots showing the relevant Burp Repeater test and observed response.
+- A concise finding report containing severity rationale, impact, reproduction summary, and remediation.
 
-STEP-5:- Examining the Customer Feedback and Legal Information
-------
-While exploring the application, I navigated to the customer feedback and About Us sections.
+## Limitations
 
-I found a link to a legal information document.
+- The work was performed on an intentionally vulnerable training application, not a production e-commerce site.
+- Exact tool versions, full command history, and raw evidence were not included in the source notes.
+- Findings are limited to the workflows described above; this is not a claim of comprehensive application coverage.
 
-I opened the document to understand how the application handled publicly accessible files and information.
+## Responsible use
 
-STEP-6:- Configuring Burp Suite for HTTP Traffic Analysis
-------
-After exploring the application manually, I started Burp Suite Community Edition.
+This repository is for education and authorized security testing. Do not test websites, accounts, or infrastructure without explicit permission.
 
-I configured the browser to send web traffic through Burp Suite using the local proxy.
+## Author
 
-The proxy settings were:
+**Naga Venkata Eswara Sastry L**  
+Cybersecurity learner | Aspiring SOC Analyst
 
-Proxy Address: 127.0.0.1
-
-Proxy Port: 8080
-
-This allowed me to capture and inspect HTTP requests and responses exchanged with the application.
-
-STEP-7:- Intercepting and Analyzing HTTP Requests
-------
-I enabled interception in Burp Suite and revisited the legal information link.
-
-Burp Suite captured the request generated by the browser.
-
-I examined the request details and sent the request to Burp Repeater for further testing.
-
-This helped me understand how web application requests can be inspected and modified during a security assessment.
-
-STEP-8:- Testing for Sensitive Information Disclosure
-------
-While analyzing the legal document request, I modified the requested file path in Burp Repeater.
-
-By changing the requested document from legal.md to acquisition.md, I was able to retrieve additional information from the application.
-
-Finding: A document containing information beyond the originally requested legal content was accessible through request manipulation.
-
-Recommendation: Implement proper server-side authorization and restrict access to sensitive files and documents.
-
-STEP-9:- Testing for Cross-Site Scripting (XSS)
-------
-Next, I tested an application input field using an HTML and JavaScript-based XSS test.
-
-The objective was to understand whether the application handled user input securely.
-
-The test demonstrated XSS-related behavior in the intentionally vulnerable application.
-
-Finding: The application was susceptible to an XSS test in the lab.
-
-Recommendation: Use context-aware output encoding, appropriate input validation, and additional browser-side protections such as Content Security Policy.
-
-STEP-10:- Testing for SQL Injection
-------
-After testing for XSS, I moved to the application login page.
-
-I entered a SQL injection test string into the login form to examine how the application handled authentication input.
-
-The test resulted in access to an administrative session within the lab application.
-
-Finding: The login functionality was vulnerable to SQL injection, allowing authentication bypass in the exercise.
-
-Recommendation: Use parameterized database queries, enforce proper authentication controls, and avoid constructing SQL queries directly from user input.
-
-STEP-11:- Exploring the Administrative Session
-------
-After accessing the administrative session, I examined the available account features.
-
-I navigated through the application and viewed the shopping basket associated with the administrative account.
-
-This helped me understand the possible impact of an authentication bypass vulnerability.
-
-STEP-12:- Examining Account Information
-------
-I continued exploring the authenticated account interface.
-
-I examined the account menu and navigated to the Privacy & Security section.
-
-This helped me understand what account-related information becomes accessible after a successful login.
-
-STEP-13:- Testing Customer Feedback Rating Validation
-------
-Next, I opened the customer feedback section.
-
-The application interface allowed users to select a rating within a limited range.
-
-I captured the feedback request using Burp Suite and sent it to Repeater.
-
-I then modified the rating value to test whether the application properly validated the submitted data.
-
-Finding: The request could be modified to contain a rating outside the normal interface range.
-
-Recommendation: Validate all user-submitted values on the server side rather than relying only on browser-side restrictions.
-
-STEP-14:- Inspecting Product-Related HTTP Requests
-------
-After completing the feedback test, I returned to the product listing.
-
-I selected a product and used Burp Suite to capture the associated HTTP request.
-
-I examined the request and response details to understand how product information was handled.
-
-STEP-15:- Testing HTTP Request Manipulation
-------
-I modified the intercepted HTTP request during the product-related testing.
-
-I examined how the application responded and what information was returned.
-
-This helped me understand how request manipulation can expose application behavior and why server-side validation and authorization are important.
-
-Finding: Product-related information was observable during request manipulation.
-
-Recommendation: Validate client-supplied parameters, enforce authorization, and protect sensitive information in server responses.
-
-STEP-16:- Reviewing Security Findings
-------
-After completing the testing activities, I reviewed the vulnerabilities and observations identified during the assessment.
-
-The main findings included:
-
-SQL Injection and authentication bypass
-
-Cross-Site Scripting (XSS)
-
-Information disclosure through accessible documents
-
-Client-side validation weaknesses in feedback ratings
-
-HTTP request manipulation and information exposure
-
-I documented the testing process with screenshots and recommendations for improving the application's security.
-
-Project Outcome
-===============
-Through this project, I gained practical experience in identifying and examining common web application security vulnerabilities.
-
-I learned how to establish a TryHackMe lab connection, scan a target using Nmap, analyze HTTP traffic using Burp Suite, and test application functionality for security weaknesses.
-
-The project also helped me understand the importance of secure authentication, input validation, access control, and protecting sensitive application information.
